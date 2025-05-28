@@ -82,7 +82,6 @@ class DatabaseSeeder extends Seeder
         // Make sure TimeslotSeeder runs after LocationSeeder
         // since TimeslotSeeder depends on locations
         $this->call([
-            LocationSeeder::class,  // Make sure this is included if not already
             TimeslotSeeder::class,  // Add this line to run the TimeslotSeeder
         ]);
     }

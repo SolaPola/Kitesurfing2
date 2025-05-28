@@ -70,15 +70,27 @@
                     <h1 class="text-2xl font-bold">Booking Details</h1>
                     <p class="text-sm text-gray-300 mt-1">Reference: {{ $booking->payment_reference }}</p>
                 </div>
-                <div>
+                <div class="flex items-center space-x-2">
                     @if ($booking->status === 'Confirmed')
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                             <i class="fas fa-check-circle mr-1"></i> {{ $booking->status }}
                         </span>
+                        <a href="{{ route('bookings.edit', $booking) }}" onclick="event.preventDefault(); window.location.href='{{ route('bookings.edit', $booking) }}';" class="inline-flex items-center px-3 py-1 rounded text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200">
+                            <i class="fas fa-edit mr-1"></i> Edit
+                        </a>
+                        <button type="button" onclick="confirmDelete()" class="inline-flex items-center px-3 py-1 rounded text-sm font-medium bg-red-100 text-red-800 hover:bg-red-200">
+                            <i class="fas fa-trash-alt mr-1"></i> Cancel
+                        </button>
                     @elseif ($booking->status === 'Pending')
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
                             <i class="fas fa-clock mr-1"></i> {{ $booking->status }}
                         </span>
+                        <a href="{{ route('bookings.edit', $booking) }}" onclick="event.preventDefault(); window.location.href='{{ route('bookings.edit', $booking) }}';" class="inline-flex items-center px-3 py-1 rounded text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200">
+                            <i class="fas fa-edit mr-1"></i> Edit
+                        </a>
+                        <button type="button" onclick="confirmDelete()" class="inline-flex items-center px-3 py-1 rounded text-sm font-medium bg-red-100 text-red-800 hover:bg-red-200">
+                            <i class="fas fa-trash-alt mr-1"></i> Cancel
+                        </button>
                     @else
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
                             {{ $booking->status }}
@@ -274,5 +286,67 @@
             </div>
         </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 z-10 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">Cancel Booking</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500">
+                                    Are you sure you want to cancel this booking? This action cannot be undone.
+                                    Any payment already made will be subject to our refund policy.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="confirm-delete-btn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel Booking
+                    </button>
+                    <button type="button" onclick="closeModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Keep Booking
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden form for delete submission -->
+    <form id="deleteForm" action="{{ route('bookings.destroy', $booking) }}" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+
+    <script>
+        function confirmDelete() {
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+            const deleteForm = document.getElementById('deleteForm');
+            
+            confirmDeleteBtn.addEventListener('click', function() {
+                deleteForm.submit();
+            });
+        });
+    </script>
 </body>
+
 </html>

@@ -379,11 +379,41 @@
                                             </span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <a href="{{ route('bookings.show', $booking) }}"
-                                            class="text-accent hover:text-cyan-400 font-medium">
-                                            View Details
-                                        </a>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <div class="flex items-center space-x-2">
+                                            <a href="{{ route('bookings.show', $booking) }}"
+                                                class="text-accent hover:text-cyan-400">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            
+                                            @if($booking->status === 'Pending' || $booking->status === 'Confirmed')
+                                                <!-- Direct Edit Link with Full URL -->
+                                                <a href="/student/bookings/{{ $booking->id }}/edit"
+                                                    class="text-blue-600 hover:text-blue-800">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                                
+                                                <!-- Modal trigger button -->
+                                                <button type="button" 
+                                                    onclick="confirmDelete({{ $booking->id }})" 
+                                                    class="text-red-600 hover:text-red-800">
+                                                    <i class="fas fa-trash-alt"></i> Cancel
+                                                </button>
+                                                
+                                                <!-- Direct delete link for testing -->
+                                                <a href="{{ route('bookings.test-destroy', $booking->id) }}"
+                                                   class="text-red-600 hover:text-red-800 underline ml-2">
+                                                   Test Delete
+                                                </a>
+                                            @endif
+                                            
+                                            @if(!$booking->is_paid)
+                                                <a href="{{ route('bookings.payment', $booking) }}"
+                                                    class="text-green-600 hover:text-green-800">
+                                                    <i class="fas fa-credit-card"></i>
+                                                </a>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -501,6 +531,72 @@
 
     <!-- Package Selection Section -->
 
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 z-10 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">Cancel Booking</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500">
+                                    Are you sure you want to cancel this booking? This action cannot be undone.
+                                    Any payment already made will be subject to our refund policy.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="confirm-delete-btn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel Booking
+                    </button>
+                    <button type="button" onclick="closeModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Keep Booking
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden form for delete submission -->
+    <form id="deleteForm" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+
+    <script>
+        let bookingIdToDelete = null;
+
+        function confirmDelete(bookingId) {
+            bookingIdToDelete = bookingId;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+            const deleteForm = document.getElementById('deleteForm');
+
+            confirmDeleteBtn.addEventListener('click', function() {
+                if (bookingIdToDelete) {
+                    deleteForm.action = `/student/bookings/${bookingIdToDelete}`;
+                    deleteForm.submit();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

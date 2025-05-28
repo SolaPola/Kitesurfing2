@@ -41,9 +41,15 @@ Route::middleware([StudentMiddleware::class])->prefix('student')->group(function
     Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
+    Route::get('/bookings/{booking}/edit', [BookingController::class, 'edit'])->name('bookings.edit');
+    Route::put('/bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update');
+    Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
     Route::get('/bookings/{booking}/payment', [BookingController::class, 'showPayment'])->name('bookings.payment');
     Route::post('/bookings/{booking}/payment', [BookingController::class, 'processPayment'])->name('bookings.process-payment');
     Route::get('/bookings/{booking}/confirmation', [BookingController::class, 'confirmation'])->name('bookings.confirmation');
+    
+    // Test route for debugging delete functionality
+    Route::get('/bookings/{booking}/test-delete', [BookingController::class, 'testDestroy'])->name('bookings.test-destroy');
 });
 
 // Timeslots route should be outside the middleware to be accessible
@@ -71,5 +77,10 @@ Route::middleware([Adminmiddleware::class])->prefix('admin')->group(function () 
 
 // Special route that allows authenticated users to return to homepage
 Route::get('/return-to-homepage', [HomeController::class, 'returnToHomepage'])->name('return.homepage');
+
+// Debugging route
+Route::get('/debug-route/{booking}', function($booking) {
+    return "Debug route working for booking ID: " . $booking;
+})->name('debug.route');
 
 require __DIR__ . '/auth.php';

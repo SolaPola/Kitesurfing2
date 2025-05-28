@@ -233,4 +233,147 @@ class BookingController extends Controller
         $booking->load(['package', 'location', 'lessonSessions']);
         return view('bookings.show', compact('booking'));
     }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Booking $booking)
+    {
+        // Add debugging to see if this method is even being called
+        \Log::info('Edit method called for booking ID: ' . $booking->id);
+        
+        // Check if the booking belongs to the current user
+        if ($booking->student_id != Auth::id()) {
+            return redirect()->route('bookings.index')->with('error', 'You do not have permission to edit this booking.');
+        }
+
+        // Check if the booking is in a state that can be edited (Pending or Confirmed)
+        if (!in_array($booking->status, ['Pending', 'Confirmed'])) {
+            return redirect()->route('bookings.show', $booking)->with('error', 'This booking cannot be edited.');
+        }
+
+        $packages = Package::all();
+        $locations = Location::all();
+
+        return view('bookings.edit', compact('booking', 'packages', 'locations'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Booking $booking)
+    {
+        // Check if the booking belongs to the current user
+        if ($booking->student_id != Auth::id()) {
+            return redirect()->route('bookings.index')->with('error', 'You do not have permission to update this booking.');
+        }
+
+        // Check if the booking is in a state that can be updated (Pending or Confirmed)
+        if (!in_array($booking->status, ['Pending', 'Confirmed'])) {
+            return redirect()->route('bookings.show', $booking)->with('error', 'This booking cannot be updated.');
+        }
+
+        // Validate the request data
+        $validated = $request->validate([
+            'package_id' => 'required|exists:packages,id',
+            'location_id' => 'required|exists:locations,id',
+            'preferred_date' => 'required|date',
+            'timeslot_id' => 'nullable|exists:timeslots,id',
+            'number_of_participants' => 'required|integer|min:1',
+            'experience_level' => 'required|string|in:Beginner,Novice,Intermediate,Advanced',
+            'special_requests' => 'nullable|string|max:1000',
+        ]);
+
+        // Calculate the total price
+        $package = Package::findOrFail($validated['package_id']);
+        $totalPrice = $package->price * $validated['number_of_participants'];
+
+        // If the booking is confirmed, add a note about the modification
+        $additionalInfo = '';
+        if ($booking->status === 'Confirmed' && !str_contains($booking->special_requests ?? '', 'Modified on')) {
+            $additionalInfo = "(Modified on " . now()->format('Y-m-d H:i') . ") ";
+            
+            // Append to existing special requests or create new
+            if (!empty($validated['special_requests'])) {
+                $validated['special_requests'] = $additionalInfo . $validated['special_requests'];
+            } else {
+                $validated['special_requests'] = $additionalInfo . "Booking was modified after confirmation.";
+            }
+        }
+
+        // Update the booking
+        $booking->update([
+            'package_id' => $validated['package_id'],
+            'location_id' => $validated['location_id'],
+            'preferred_date' => $validated['preferred_date'],
+            'timeslot_id' => $validated['timeslot_id'],
+            'number_of_participants' => $validated['number_of_participants'],
+            'experience_level' => $validated['experience_level'],
+            'special_requests' => $validated['special_requests'],
+            'total_price' => $totalPrice,
+        ]);
+
+        // Redirect to the booking details page with a success message
+        return redirect()->route('bookings.show', $booking)->with('success', 'Booking updated successfully!');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Booking $booking)
+    {
+        // Add debugging information
+        \Log::info('Destroy method called for booking ID: ' . $booking->id);
+
+        // Check if the booking belongs to the current user
+        if ($booking->student_id != Auth::id()) {
+            \Log::warning('User attempted to delete booking that does not belong to them: ' . $booking->id);
+            return redirect()->route('bookings.index')->with('error', 'You do not have permission to cancel this booking.');
+        }
+
+        // Check if the booking is in a state that can be cancelled
+        if (!in_array($booking->status, ['Pending', 'Confirmed'])) {
+            \Log::warning('User attempted to delete booking in invalid state: ' . $booking->status);
+            return redirect()->route('bookings.show', $booking)->with('error', 'This booking cannot be cancelled.');
+        }
+
+        try {
+            // If the booking is paid, mark it as cancelled but don't delete it
+            if ($booking->is_paid) {
+                $booking->update(['status' => 'Cancelled']);
+                \Log::info('Booking marked as cancelled (paid booking): ' . $booking->id);
+                return redirect()->route('bookings.index')->with('success', 'Booking cancelled successfully. Our team will contact you regarding the refund process.');
+            }
+
+            // If not paid, delete the booking
+            $bookingId = $booking->id;
+            $booking->delete();
+            \Log::info('Booking deleted successfully: ' . $bookingId);
+            
+            return redirect()->route('bookings.index')->with('success', 'Booking cancelled successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error deleting booking: ' . $e->getMessage());
+            return redirect()->route('bookings.index')->with('error', 'There was an error cancelling your booking: ' . $e->getMessage());
+        }
+    }
+
+    // Test route for simple deletion
+    public function testDestroy($id)
+    {
+        $booking = Booking::findOrFail($id);
+        
+        try {
+            // If the booking is paid, mark it as cancelled but don't delete it
+            if ($booking->is_paid) {
+                $booking->update(['status' => 'Cancelled']);
+                return redirect()->route('bookings.index')->with('success', 'Booking marked as cancelled.');
+            }
+
+            // If not paid, delete the booking
+            $booking->delete();
+            return redirect()->route('bookings.index')->with('success', 'Booking deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('bookings.index')->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
 }
