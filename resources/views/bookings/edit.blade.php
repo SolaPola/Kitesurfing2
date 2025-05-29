@@ -48,7 +48,8 @@
                         <a href="{{ route('home') }}"
                             class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-800 hover:bg-opacity-70">Home</a>
                         <a href="{{ route('bookings.index') }}"
-                            class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-800 hover:bg-opacity-70">My Bookings</a>
+                            class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-800 hover:bg-opacity-70">My
+                            Bookings</a>
                         <a href="{{ route('dashboard') }}"
                             class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-800 hover:bg-opacity-70">Dashboard</a>
                     </div>
@@ -97,7 +98,8 @@
                         <select id="package_id" name="package_id" required
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent">
                             @foreach ($packages as $package)
-                                <option value="{{ $package->id }}" {{ $booking->package_id == $package->id ? 'selected' : '' }}>
+                                <option value="{{ $package->id }}"
+                                    {{ $booking->package_id == $package->id ? 'selected' : '' }}>
                                     {{ $package->name }} - €{{ number_format($package->price, 2) }}
                                     ({{ $package->hours }} hours)
                                 </option>
@@ -107,11 +109,13 @@
 
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <div>
-                            <label for="location_id" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                            <label for="location_id"
+                                class="block text-sm font-medium text-gray-700 mb-1">Location</label>
                             <select id="location_id" name="location_id" required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent">
                                 @foreach ($locations as $location)
-                                    <option value="{{ $location->id }}" {{ $booking->location_id == $location->id ? 'selected' : '' }}>
+                                    <option value="{{ $location->id }}"
+                                        {{ $booking->location_id == $location->id ? 'selected' : '' }}>
                                         {{ $location->name }}
                                     </option>
                                 @endforeach
@@ -119,21 +123,24 @@
                         </div>
 
                         <div>
-                            <label for="preferred_date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                            <label for="preferred_date"
+                                class="block text-sm font-medium text-gray-700 mb-1">Date</label>
                             <input type="date" id="preferred_date" name="preferred_date" required
                                 value="{{ $booking->preferred_date }}" min="{{ date('Y-m-d') }}"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent">
                         </div>
 
                         <div>
-                            <label for="timeslot_id" class="block text-sm font-medium text-gray-700 mb-1">Time Slot (Optional)</label>
+                            <label for="timeslot_id" class="block text-sm font-medium text-gray-700 mb-1">Time Slot
+                                (Optional)</label>
                             <select id="timeslot_id" name="timeslot_id"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent">
                                 <option value="">Choose a timeslot (optional)</option>
                                 <!-- Timeslots will be loaded dynamically -->
                             </select>
                             <p id="no-timeslots" class="hidden mt-2 text-sm text-yellow-600">
-                                No available timeslots for selected date and location. Your booking will be processed and we'll contact you to arrange a suitable time.
+                                No available timeslots for selected date and location. Your booking will be processed
+                                and we'll contact you to arrange a suitable time.
                             </p>
                         </div>
 
@@ -147,19 +154,23 @@
                         </div>
 
                         <div>
-                            <label for="experience_level" class="block text-sm font-medium text-gray-700 mb-1">Experience Level</label>
+                            <label for="experience_level"
+                                class="block text-sm font-medium text-gray-700 mb-1">Experience Level</label>
                             <select id="experience_level" name="experience_level" required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent">
-                                <option value="Beginner" {{ $booking->experience_level == 'Beginner' ? 'selected' : '' }}>
+                                <option value="Beginner"
+                                    {{ $booking->experience_level == 'Beginner' ? 'selected' : '' }}>
                                     Beginner - Never tried kitesurfing
                                 </option>
                                 <option value="Novice" {{ $booking->experience_level == 'Novice' ? 'selected' : '' }}>
                                     Novice - 1-2 lessons before
                                 </option>
-                                <option value="Intermediate" {{ $booking->experience_level == 'Intermediate' ? 'selected' : '' }}>
+                                <option value="Intermediate"
+                                    {{ $booking->experience_level == 'Intermediate' ? 'selected' : '' }}>
                                     Intermediate - Can ride but want to improve
                                 </option>
-                                <option value="Advanced" {{ $booking->experience_level == 'Advanced' ? 'selected' : '' }}>
+                                <option value="Advanced"
+                                    {{ $booking->experience_level == 'Advanced' ? 'selected' : '' }}>
                                     Advanced - Want to learn new tricks
                                 </option>
                             </select>
@@ -242,7 +253,8 @@
 
                             // Show remaining spots in the option text
                             if (slot.is_available || slot.id == currentTimeslotId) {
-                                option.textContent = `${slot.formatted_time} (${slot.remaining_spots} spot${slot.remaining_spots > 1 ? 's' : ''} left)`;
+                                option.textContent =
+                                    `${slot.formatted_time} (${slot.remaining_spots} spot${slot.remaining_spots > 1 ? 's' : ''} left)`;
                                 availableFound = true;
                             } else {
                                 option.textContent = `${slot.formatted_time} (Full)`;
@@ -259,7 +271,8 @@
                     .catch(error => {
                         console.error('Error loading timeslots:', error);
                         timeslotSelect.innerHTML = '<option value="">Error loading timeslots</option>';
-                        noTimeslotsMessage.textContent = 'Error loading available times. Please try again later or proceed without selecting a specific time.';
+                        noTimeslotsMessage.textContent =
+                            'Error loading available times. Please try again later or proceed without selecting a specific time.';
                         noTimeslotsMessage.classList.remove('hidden');
                     });
             }

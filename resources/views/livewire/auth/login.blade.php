@@ -73,6 +73,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     }
 }; ?>
 
+
 <div>
     <div class="w-full max-w-6xl bg-navy-800 backdrop-blur-md p-8 rounded-2xl shadow-xl flex flex-col gap-6">
 

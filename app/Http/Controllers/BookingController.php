@@ -241,7 +241,7 @@ class BookingController extends Controller
     {
         // Add debugging to see if this method is even being called
         \Log::info('Edit method called for booking ID: ' . $booking->id);
-        
+
         // Check if the booking belongs to the current user
         if ($booking->student_id != Auth::id()) {
             return redirect()->route('bookings.index')->with('error', 'You do not have permission to edit this booking.');
@@ -292,7 +292,7 @@ class BookingController extends Controller
         $additionalInfo = '';
         if ($booking->status === 'Confirmed' && !str_contains($booking->special_requests ?? '', 'Modified on')) {
             $additionalInfo = "(Modified on " . now()->format('Y-m-d H:i') . ") ";
-            
+
             // Append to existing special requests or create new
             if (!empty($validated['special_requests'])) {
                 $validated['special_requests'] = $additionalInfo . $validated['special_requests'];
@@ -349,7 +349,7 @@ class BookingController extends Controller
             $bookingId = $booking->id;
             $booking->delete();
             \Log::info('Booking deleted successfully: ' . $bookingId);
-            
+
             return redirect()->route('bookings.index')->with('success', 'Booking cancelled successfully.');
         } catch (\Exception $e) {
             \Log::error('Error deleting booking: ' . $e->getMessage());
@@ -361,7 +361,7 @@ class BookingController extends Controller
     public function testDestroy($id)
     {
         $booking = Booking::findOrFail($id);
-        
+
         try {
             // If the booking is paid, mark it as cancelled but don't delete it
             if ($booking->is_paid) {

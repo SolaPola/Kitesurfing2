@@ -47,7 +47,7 @@ Route::middleware([StudentMiddleware::class])->prefix('student')->group(function
     Route::get('/bookings/{booking}/payment', [BookingController::class, 'showPayment'])->name('bookings.payment');
     Route::post('/bookings/{booking}/payment', [BookingController::class, 'processPayment'])->name('bookings.process-payment');
     Route::get('/bookings/{booking}/confirmation', [BookingController::class, 'confirmation'])->name('bookings.confirmation');
-    
+
     // Test route for debugging delete functionality
     Route::get('/bookings/{booking}/test-delete', [BookingController::class, 'testDestroy'])->name('bookings.test-destroy');
 });
@@ -79,7 +79,7 @@ Route::middleware([Adminmiddleware::class])->prefix('admin')->group(function () 
 Route::get('/return-to-homepage', [HomeController::class, 'returnToHomepage'])->name('return.homepage');
 
 // Debugging route
-Route::get('/debug-route/{booking}', function($booking) {
+Route::get('/debug-route/{booking}', function ($booking) {
     return "Debug route working for booking ID: " . $booking;
 })->name('debug.route');
 
