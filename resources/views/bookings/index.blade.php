@@ -387,23 +387,19 @@
                                             </a>
 
                                             @if ($booking->status === 'Pending' || $booking->status === 'Confirmed')
-                                                <!-- Direct Edit Link with Full URL -->
-                                                <a href="/student/bookings/{{ $booking->id }}/edit"
+                                                <!-- Edit Link using route helper -->
+                                                <a href="{{ route('bookings.edit', $booking->id) }}"
                                                     class="text-blue-600 hover:text-blue-800">
                                                     <i class="fas fa-edit"></i> Edit
                                                 </a>
 
-                                                <!-- Modal trigger button -->
-                                                <button type="button" onclick="confirmDelete({{ $booking->id }})"
-                                                    class="text-red-600 hover:text-red-800">
-                                                    <i class="fas fa-trash-alt"></i> Cancel
-                                                </button>
-
                                                 <!-- Direct delete link for testing -->
-                                                <a href="{{ route('bookings.test-destroy', $booking->id) }}"
+                                                <button type="button" 
+                                                    onclick="if(confirm('Are you sure you want to test delete this booking?')) window.location.href='{{ route('bookings.test-destroy', $booking->id) }}'"
                                                     class="text-red-600 hover:text-red-800 underline ml-2">
-                                                    Test Delete
-                                                </a>
+                                                    <i class="fas fa-trash-alt"></i>
+                                                    Delete
+                                                </button>
                                             @endif
 
                                             @if (!$booking->is_paid)

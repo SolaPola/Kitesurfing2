@@ -9,6 +9,7 @@ use App\Models\Instructor;
 use App\Models\Timeslot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log; // Add this import statement
 use Illuminate\Support\Str;
 
 class BookingController extends Controller
@@ -239,13 +240,15 @@ class BookingController extends Controller
      */
     public function edit(Booking $booking)
     {
+
         // Add debugging to see if this method is even being called
-        \Log::info('Edit method called for booking ID: ' . $booking->id);
+        Log::info('Edit method called for booking ID: ' . $booking->id);
 
         // Check if the booking belongs to the current user
-        if ($booking->student_id != Auth::id()) {
-            return redirect()->route('bookings.index')->with('error', 'You do not have permission to edit this booking.');
-        }
+        // if ($booking->student_id != Auth::id()) {
+        //     dd('werfg');
+        //     return redirect()->route('bookings.index')->with('error', 'You do not have permission to edit this booking.');
+        // }
 
         // Check if the booking is in a state that can be edited (Pending or Confirmed)
         if (!in_array($booking->status, ['Pending', 'Confirmed'])) {
@@ -263,13 +266,18 @@ class BookingController extends Controller
      */
     public function update(Request $request, Booking $booking)
     {
+        // Add debugging to see if this method is being called
+        \Log::info('Update method called for booking ID: ' . $booking->id, $request->all());
+
         // Check if the booking belongs to the current user
-        if ($booking->student_id != Auth::id()) {
+        if ($booking->user_id != Auth::id()) {
+            \Log::warning('User attempted to update booking that does not belong to them: ' . $booking->id);
             return redirect()->route('bookings.index')->with('error', 'You do not have permission to update this booking.');
         }
 
         // Check if the booking is in a state that can be updated (Pending or Confirmed)
         if (!in_array($booking->status, ['Pending', 'Confirmed'])) {
+            \Log::warning('User attempted to update booking in invalid state: ' . $booking->status);
             return redirect()->route('bookings.show', $booking)->with('error', 'This booking cannot be updated.');
         }
 
@@ -301,16 +309,36 @@ class BookingController extends Controller
             }
         }
 
+        // Store the original values for logging
+        $originalValues = [
+            'package_id' => $booking->package_id,
+            'location_id' => $booking->location_id,
+            'preferred_date' => $booking->preferred_date,
+            'timeslot_id' => $booking->timeslot_id,
+            'number_of_participants' => $booking->number_of_participants,
+            'experience_level' => $booking->experience_level,
+            'special_requests' => $booking->special_requests,
+            'total_price' => $booking->total_price,
+        ];
+
         // Update the booking
-        $booking->update([
-            'package_id' => $validated['package_id'],
-            'location_id' => $validated['location_id'],
-            'preferred_date' => $validated['preferred_date'],
-            'timeslot_id' => $validated['timeslot_id'],
-            'number_of_participants' => $validated['number_of_participants'],
-            'experience_level' => $validated['experience_level'],
-            'special_requests' => $validated['special_requests'],
-            'total_price' => $totalPrice,
+        $booking->package_id = $validated['package_id'];
+        $booking->location_id = $validated['location_id'];
+        $booking->preferred_date = $validated['preferred_date'];
+        $booking->timeslot_id = $validated['timeslot_id'];
+        $booking->number_of_participants = $validated['number_of_participants'];
+        $booking->experience_level = $validated['experience_level'];
+        $booking->special_requests = $validated['special_requests'];
+        $booking->total_price = $totalPrice;
+
+        // Save the changes
+        $result = $booking->save();
+
+        // Log the update result
+        \Log::info('Booking update result: ' . ($result ? 'Success' : 'Failed'), [
+            'booking_id' => $booking->id,
+            'original' => $originalValues,
+            'new' => $validated
         ]);
 
         // Redirect to the booking details page with a success message
@@ -326,7 +354,7 @@ class BookingController extends Controller
         \Log::info('Destroy method called for booking ID: ' . $booking->id);
 
         // Check if the booking belongs to the current user
-        if ($booking->student_id != Auth::id()) {
+        if ($booking->user_id != Auth::id()) {
             \Log::warning('User attempted to delete booking that does not belong to them: ' . $booking->id);
             return redirect()->route('bookings.index')->with('error', 'You do not have permission to cancel this booking.');
         }

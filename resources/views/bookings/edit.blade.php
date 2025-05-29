@@ -93,6 +93,9 @@
                     @csrf
                     @method('PUT')
 
+                    <!-- Debug info to make sure we're editing the right booking -->
+                    <input type="hidden" name="debug_booking_id" value="{{ $booking->id }}">
+
                     <div class="mb-6">
                         <label for="package_id" class="block text-sm font-medium text-gray-700 mb-1">Package</label>
                         <select id="package_id" name="package_id" required
