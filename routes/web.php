@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\HomeController;
@@ -10,8 +12,21 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\InstructorMiddleware;
 use App\Http\Middleware\StudentMiddleware;
 use GuzzleHttp\Middleware;
-use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -77,10 +92,5 @@ Route::middleware([Adminmiddleware::class])->prefix('admin')->group(function () 
 
 // Special route that allows authenticated users to return to homepage
 Route::get('/return-to-homepage', [HomeController::class, 'returnToHomepage'])->name('return.homepage');
-
-// Debugging route
-Route::get('/debug-route/{booking}', function ($booking) {
-    return "Debug route working for booking ID: " . $booking;
-})->name('debug.route');
 
 require __DIR__ . '/auth.php';

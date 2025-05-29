@@ -44,7 +44,7 @@
                 <div class="hidden md:flex items-center justify-between space-x-4">
                     <div class="flex items-baseline space-x-4">
                         <a href="#"
-                            class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-800 hover:bg-opacity-70">Home</a>
+                            class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-800 hover:bg-opacity-70">Dashboard</a>
                         <a href="#"
                             class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-gray-800 hover:bg-opacity-70">Services</a>
                         <a href="#"

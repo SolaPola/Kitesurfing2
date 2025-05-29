@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,17 +28,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Redirect based on user role
-        $user = Auth::user();
-        if ($user->isAdmin()) {
-            return redirect()->intended(route('admin.dashboard'));
-        } elseif ($user->isInstructor()) {
-            return redirect()->intended(route('instructor.dashboard'));
-        } elseif ($user->isStudent()) {
-            return redirect()->intended(route('student.dashboard'));
-        }
-
-        return redirect()->intended(RouteServiceProvider::HOME);
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 
     /**
@@ -47,7 +36,6 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        // No longer handling homepage redirect here - this is just for logout
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
