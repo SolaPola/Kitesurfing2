@@ -18,15 +18,22 @@ class Student extends Model
     protected $fillable = [
         'user_id',
         'relation_number',
-        'isactive',
-        'remark',
+        // Add any other student-specific fields here
     ];
 
     /**
-     * Get the user that owns the student.
+     * Get the user that owns the student profile.
      */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get all bookings for this student.
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'student_id', 'user_id');
     }
 }

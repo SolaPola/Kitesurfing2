@@ -16,6 +16,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
+        // Check if redirected from verification page with status
+        if (session('status') && str_contains(session('status'), 'verified')) {
+            return view('auth.login', ['status' => 'Your email has been verified! You can now login.']);
+        }
+
         return view('auth.login');
     }
 

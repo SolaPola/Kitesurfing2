@@ -90,6 +90,24 @@ Route::middleware([Adminmiddleware::class])->prefix('admin')->group(function () 
     Route::delete('/accounts/{user}', [UserController::class, 'destroy'])->name('accounts.destroy');
 });
 
+// Custom routes for email verification and password setup
+Route::get('/set-password/{id}/{hash}', [App\Http\Controllers\Auth\RegisteredUserController::class, 'showSetPasswordForm'])
+    ->middleware(['guest'])
+    ->name('password.set.form');
+
+Route::post('/set-password', [App\Http\Controllers\Auth\RegisteredUserController::class, 'setPassword'])
+    ->middleware(['guest'])
+    ->name('password.set');
+
+// Registration confirmation routes
+Route::get('/registration-confirmation', [App\Http\Controllers\Auth\RegisteredUserController::class, 'showConfirmation'])
+    ->middleware('guest')
+    ->name('registration.confirmation');
+
+Route::post('/email/verification/resend', [App\Http\Controllers\Auth\RegisteredUserController::class, 'resendVerificationEmail'])
+    ->middleware('guest')
+    ->name('verification.resend');
+
 // Special route that allows authenticated users to return to homepage
 Route::get('/return-to-homepage', [HomeController::class, 'returnToHomepage'])->name('return.homepage');
 

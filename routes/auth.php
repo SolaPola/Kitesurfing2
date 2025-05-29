@@ -57,3 +57,12 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 });
+
+// Custom routes for email verification and password setup
+Route::get('/set-password/{id}/{hash}', [RegisteredUserController::class, 'showSetPasswordForm'])
+    ->middleware(['guest'])
+    ->name('password.set.form');
+
+Route::post('/set-password', [RegisteredUserController::class, 'setPassword'])
+    ->middleware(['guest'])
+    ->name('password.set');
