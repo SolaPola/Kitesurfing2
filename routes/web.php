@@ -73,6 +73,8 @@ Route::get('/booking/timeslots', [BookingController::class, 'getAvailableTimeslo
 // Instructor specific routes
 Route::middleware([InstructorMiddleware::class])->prefix('instructor')->group(function () {
     Route::get('/dashboard', [InstructorDashboardController::class, 'index'])->name('instructor.dashboard');
+    Route::get('/profile', [App\Http\Controllers\InstructorProfileController::class, 'index'])->name('instructor.profile');
+    Route::put('/profile', [App\Http\Controllers\InstructorProfileController::class, 'update'])->name('instructor.profile.update');
     Route::get('/students', [InstructorDashboardController::class, 'students'])->name('instructor.students');
 });
 

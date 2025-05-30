@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Only run if table doesn't exist to avoid conflicts
         if (!Schema::hasTable('instructors')) {
             Schema::create('instructors', function (Blueprint $table) {
-                $table->id(); // Id (PK)
-                $table->foreignId('user_id')->constrained()->onDelete('cascade'); // UserId (FK)
-                $table->string('number')->nullable(); // Make it nullable to avoid conflicts
-                $table->boolean('isactive')->default(true); // Isactive
-                $table->text('remark')->nullable(); // Remark
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->string('phone')->nullable();
+                $table->string('address')->nullable();
+                $table->string('city')->nullable();
+                $table->string('postal_code')->nullable();
+                $table->string('bsn', 9)->nullable();
+                $table->boolean('isactive')->default(true);
                 $table->timestamps();
             });
         }

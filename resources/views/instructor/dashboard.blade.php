@@ -86,6 +86,10 @@
                     class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-offwhite hover:text-accent mb-1">
                     <i class="fas fa-calendar-alt mr-3"></i>Lessons
                 </a>
+                <a href="{{ route('instructor.profile') }}"
+                    class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-offwhite hover:text-accent mb-1">
+                    <i class="fas fa-user mr-3"></i>Profile
+                </a>
                 <a href="#"
                     class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-offwhite hover:text-accent mb-1">
                     <i class="fas fa-life-ring mr-3"></i>Equipment

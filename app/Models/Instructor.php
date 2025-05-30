@@ -20,40 +20,19 @@ class Instructor extends Model
     protected $fillable = [
         'user_id',
         'number',
+        'phone',
+        'address',
+        'city',
+        'postal_code',
+        'bsn',
         'isactive',
-        'remark',
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'isactive' => 'boolean',
-    ];
-
-    /**
-     * Get the user that owns the instructor.
+     * Get the user that owns the instructor profile.
      */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Get the bookings assigned to the instructor.
-     */
-    public function bookings(): HasMany
-    {
-        return $this->hasMany(Booking::class);
-    }
-
-    /**
-     * Get the lesson sessions assigned to the instructor.
-     */
-    public function lessonSessions(): HasMany
-    {
-        return $this->hasMany(BookingLessonSession::class);
     }
 }

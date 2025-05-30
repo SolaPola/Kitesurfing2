@@ -4,20 +4,27 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class InstructorMiddleware
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        if (!$request->user() || !$request->user()->isInstructor()) {
-            return redirect()->route('home')
-                ->with('error', 'Only instructors can access this page.');
+        // First check if user is authenticated
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'You must be logged in to access this page');
+        }
+
+        // Check if user has instructor role (role_id = 2 typically for instructor)
+        if (Auth::user()->role_id != 2) {
+            return redirect()->route('dashboard')->with('error', 'You do not have permission to access the instructor area');
         }
 
         return $next($request);

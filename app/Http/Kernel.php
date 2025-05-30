@@ -26,9 +26,7 @@ class Kernel extends HttpKernel
         \Illuminate\View\Middleware\ShareErrorsFromSession::class,
         \App\Http\Middleware\RedirectIfAuthenticated::class,
         \App\Http\Middleware\CheckRole::class,
-        \App\Http\Middleware\StudentMiddleware::class,
-        \App\Http\Middleware\InstructorMiddleware::class,
-        \App\Http\Middleware\AdminMiddleware::class,
+        // Removed role-specific middleware from global stack as they shouldn't run on every request
     ];
 
     /**
