@@ -123,4 +123,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(Student::class);
     }
+
+    /**
+     * Get the instructor record associated with the user.
+     */
+    public function instructor()
+    {
+        return $this->hasOne(Instructor::class);
+    }
 }

@@ -19,7 +19,6 @@ class Instructor extends Model
      */
     protected $fillable = [
         'user_id',
-        'number',
         'phone',
         'address',
         'city',
@@ -34,5 +33,21 @@ class Instructor extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+    
+    /**
+     * Get the bookings assigned to this instructor.
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+    
+    /**
+     * Get the lesson sessions for this instructor.
+     */
+    public function lessonSessions(): HasMany
+    {
+        return $this->hasMany(BookingLessonSession::class);
     }
 }

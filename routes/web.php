@@ -71,11 +71,19 @@ Route::middleware([StudentMiddleware::class])->prefix('student')->group(function
 Route::get('/booking/timeslots', [BookingController::class, 'getAvailableTimeslots'])->name('booking.timeslots');
 
 // Instructor specific routes
-Route::middleware([InstructorMiddleware::class])->prefix('instructor')->group(function () {
+Route::middleware(['auth', InstructorMiddleware::class])->prefix('instructor')->group(function () {
     Route::get('/dashboard', [InstructorDashboardController::class, 'index'])->name('instructor.dashboard');
     Route::get('/profile', [App\Http\Controllers\InstructorProfileController::class, 'index'])->name('instructor.profile');
     Route::put('/profile', [App\Http\Controllers\InstructorProfileController::class, 'update'])->name('instructor.profile.update');
-    Route::get('/students', [InstructorDashboardController::class, 'students'])->name('instructor.students');
+    Route::get('/students', [App\Http\Controllers\InstructorController::class, 'students'])->name('instructor.students');
+
+    // Fix the lessons routes by adding the full namespace path
+    Route::get('/lessons', [App\Http\Controllers\InstructorController::class, 'lessons'])->name('instructor.lessons');
+    Route::put('/lessons/{id}/update-status', [App\Http\Controllers\InstructorController::class, 'updateLessonStatus'])->name('instructor.lessons.update-status');
+    
+    // Add these new routes for lesson cancellation
+    Route::get('/lessons/{id}/cancel', [App\Http\Controllers\InstructorController::class, 'showCancelForm'])->name('instructor.lessons.cancel-form');
+    Route::put('/lessons/{id}/cancel', [App\Http\Controllers\InstructorController::class, 'cancelLesson'])->name('instructor.lessons.cancel');
 });
 
 // Admin specific routes

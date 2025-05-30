@@ -82,7 +82,7 @@
                     class="block px-4 py-3 rounded-lg bg-accent text-white font-medium mb-1">
                     <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
                 </a>
-                <a href="#"
+                <a href="{{ route('instructor.lessons') }}"
                     class="block px-4 py-3 rounded-lg text-gray-700 hover:bg-offwhite hover:text-accent mb-1">
                     <i class="fas fa-calendar-alt mr-3"></i>Lessons
                 </a>
@@ -117,6 +117,29 @@
                 <p class="text-gray-600">Welcome to your instructor portal. Manage your lessons and track student
                     progress.
                 </p>
+            </div>
+
+            <!-- Dashboard summary cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <!-- Today's Lessons -->
+                <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-accent">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Today's Lessons</p>
+                            <h3 class="text-2xl font-bold text-gray-900">{{ $todayLessonsCount ?? 0 }}</h3>
+                        </div>
+                        <div class="bg-accent/10 p-3 rounded-full">
+                            <i class="fas fa-calendar-day text-accent text-xl"></i>
+                        </div>
+                    </div>
+                    <a href="{{ route('instructor.lessons') }}"
+                        class="mt-3 text-sm text-accent hover:underline inline-flex items-center">
+                        View Lessons
+                        <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                    </a>
+                </div>
+
+                <!-- Additional dashboard cards can be added here -->
             </div>
 
             <!-- Rest of dashboard content -->

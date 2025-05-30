@@ -45,7 +45,7 @@ class BookingLessonSession extends Model
     }
 
     /**
-     * Get the instructor that is assigned to the lesson session.
+     * Get the instructor assigned to this lesson.
      */
     public function instructor(): BelongsTo
     {
